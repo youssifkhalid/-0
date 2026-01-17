@@ -207,7 +207,7 @@
                 <div>
                     <div class="flex items-center gap-3 mb-6 px-2">
                         <div class="w-1 h-6 bg-accent rounded-full shadow-[0_0_10px_#06b6d4]"></div>
-                        <h3 class="text-xl font-bold text-white">مهام اليوم (${CONFIG.today})</h3>
+                        <h3 class="text-xl font-bold text-white">مهام اليوم </h3>
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -425,6 +425,7 @@
                 },
 
                 // Computed
+            
                 get pageTitle() { const t = {dashboard:'لوحة القيادة', schedule:'الجدول الزمني', backlog:'غرفة العمليات', tree:'خريطة المنهج'}; return t[this.currentView]; },
                 get todayDateStr() { return new Date().toLocaleDateString('ar-EG', {weekday:'long', day:'numeric', month:'long'}); },
                 get todayTasks() { return this.tasks.filter(t => t.d === "1/17"); }, // Fixed date for demo
