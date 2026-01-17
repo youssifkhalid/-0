@@ -2,600 +2,568 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>المعسكر</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title> المعسكر  </title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6366f1', // Indigo
+                        secondary: '#ec4899', // Pink
+                        accent: '#06b6d4', // Cyan
+                        dark: '#0f172a',
+                        surface: 'rgba(30, 41, 59, 0.7)'
+                    },
+                    fontFamily: { sans: ['Cairo', 'sans-serif'] },
+                    animation: {
+                        'blob': 'blob 10s infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'slide-in': 'slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards'
+                    },
+                    keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        slideIn: {
+                            '0%': { opacity: 0, transform: 'translateY(20px)' },
+                            '100%': { opacity: 1, transform: 'translateY(0)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&display=swap');
         
-        body { font-family: 'Cairo', sans-serif; background-color: #f0f4f8; overflow-x: hidden; }
+        body { 
+            font-family: 'Cairo', sans-serif; 
+            background-color: #020617; 
+            color: #f8fafc; 
+            overflow: hidden;
+        }
+
+        /* Animated Background */
+        .bg-orb {
+            position: fixed; border-radius: 50%; filter: blur(100px); opacity: 0.4; z-index: -1; animation: blob 15s infinite alternate;
+        }
+
+        /* Glassmorphism */
+        .glass {
+            background: rgba(30, 41, 59, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
         
-        /* Glassmorphism Styles */
-        .glass { background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.6); }
-        .glass-dark { background: rgba(30, 41, 59, 0.9); backdrop-filter: blur(12px); color: white; }
-        
-        .sidebar-link { transition: all 0.3s ease; border-right: 3px solid transparent; }
-        .sidebar-link:hover, .sidebar-link.active { background: #e0e7ff; color: #4338ca; border-right-color: #4338ca; }
-        
-        .task-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .task-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); }
-        
-        /* Subject Gradients */
-        .grad-ar { background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); color: #7f1d1d; }
-        .grad-bio { background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%); color: #14532d; }
-        .grad-chem { background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); color: #1e3a8a; }
-        .grad-phys { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); color: #78350f; }
-        .grad-eng { background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%); color: #581c87; }
-        
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+        }
+
+        /* Nav Active */
+        .nav-btn.active {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+            border-left: 4px solid #6366f1;
+            color: white;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
+        ::-webkit-scrollbar-track { background: transparent; }
     </style>
 </head>
-<body class="flex h-screen text-slate-800">
+<body x-data="app()" x-init="initApp()" class="h-screen flex text-slate-100 selection:bg-primary selection:text-white">
 
-    <aside class="w-72 bg-white/80 backdrop-blur-md shadow-2xl z-50 flex flex-col hidden md:flex border-l border-slate-200">
-        <div class="p-8 flex items-center gap-3">
-            <div class="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-xl shadow-lg shadow-indigo-200">
-                <i class="fas fa-brain"></i>
+    <div class="bg-orb bg-primary w-[500px] h-[500px] top-[-100px] left-[-100px]"></div>
+    <div class="bg-orb bg-secondary w-[400px] h-[400px] bottom-0 right-0 animation-delay-2000"></div>
+    <div class="bg-orb bg-accent w-[300px] h-[300px] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 animation-delay-4000"></div>
+
+    <aside class="hidden md:flex w-72 flex-col glass m-4 rounded-[2rem] relative z-20 overflow-hidden">
+        <div class="p-8 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg shadow-primary/30 animate-float">
+                <i class="fas fa-atom text-2xl text-white"></i>
             </div>
             <div>
-                <h1 class="font-black text-xl tracking-tight text-slate-800">المعسكر <span class="text-indigo-600"></span></h1>
-                <p class="text-xs text-slate-500 font-bold">إصدار المعسكرات </p>
+                <h1 class="text-2xl font-black tracking-tight text-white">المعسكر</h1>
+                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Future OS 2026</p>
             </div>
         </div>
 
-        <nav class="flex-1 px-4 space-y-2 mt-2">
-            <button onclick="router('dashboard')" id="nav-dashboard" class="sidebar-link active w-full flex items-center gap-4 px-6 py-4 rounded-xl font-bold text-slate-500">
-                <i class="fas fa-home text-lg"></i> لوحة التحكم
-            </button>
-            <button onclick="router('schedule')" id="nav-schedule" class="sidebar-link w-full flex items-center gap-4 px-6 py-4 rounded-xl font-bold text-slate-500">
-                <i class="fas fa-calendar-alt text-lg"></i> الجدول الدراسي
-            </button>
-            <button onclick="router('backlog')" id="nav-backlog" class="sidebar-link w-full flex items-center gap-4 px-6 py-4 rounded-xl font-bold text-slate-500 relative">
-                <i class="fas fa-layer-group text-lg"></i> المتراكم
-                <span id="badge-backlog" class="absolute left-4 bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full hidden">0</span>
-            </button>
-            <button onclick="router('analytics')" id="nav-analytics" class="sidebar-link w-full flex items-center gap-4 px-6 py-4 rounded-xl font-bold text-slate-500">
-                <i class="fas fa-chart-pie text-lg"></i> الإحصائيات
-            </button>
+        <nav class="flex-1 px-4 space-y-2 py-4">
+            <template x-for="item in navItems">
+                <button @click="currentView = item.id" 
+                    :class="currentView === item.id ? 'active' : 'text-gray-400 hover:text-white hover:bg-white/5'"
+                    class="nav-btn w-full flex items-center gap-4 px-6 py-4 rounded-xl font-bold transition-all group">
+                    <i :class="item.icon" class="text-xl w-6 transition-transform group-hover:scale-110"></i>
+                    <span x-text="item.label"></span>
+                    <span x-show="item.id === 'backlog' && backlogCount > 0" x-text="backlogCount" class="mr-auto bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full animate-pulse shadow-lg shadow-red-500/40"></span>
+                </button>
+            </template>
         </nav>
 
-        <div class="p-6">
-            <button onclick="openModal()" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold shadow-xl shadow-slate-300 hover:bg-slate-800 transition flex items-center justify-center gap-2">
-                <i class="fas fa-plus-circle"></i> إضافة مهمة
+        <div class="p-6 border-t border-white/5">
+            <button @click="openModal()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-primary to-secondary text-white font-black shadow-lg hover:shadow-primary/40 transition-all hover:scale-[1.02] flex items-center justify-center gap-2">
+                <i class="fas fa-plus"></i> مهمة يدوية
             </button>
         </div>
     </aside>
 
-    <main class="flex-1 flex flex-col h-full overflow-hidden relative bg-[#f8fafc]">
+    <main class="flex-1 flex flex-col h-full overflow-hidden relative z-10">
         
-        <header class="h-20 glass flex items-center justify-between px-8 sticky top-0 z-40">
-            <div class="flex items-center gap-4">
-                <button class="md:hidden text-2xl text-slate-600"><i class="fas fa-bars"></i></button>
-                <h2 id="page-title" class="text-2xl font-bold text-slate-800">لوحة القيادة</h2>
+        <header class="h-24 flex items-center justify-between px-8">
+            <div class="animate-slide-in">
+                <h2 class="text-3xl font-black text-white drop-shadow-md" x-text="pageTitle"></h2>
+                <p class="text-sm font-bold text-gray-400 mt-1 flex items-center gap-2">
+                    <i class="fas fa-calendar-check text-accent"></i> <span x-text="todayDateStr"></span>
+                </p>
             </div>
+            
             <div class="flex items-center gap-4">
-                <div class="text-left hidden sm:block">
-                    <p class="text-sm font-bold text-slate-800" id="current-date-display"></p>
-                    <p class="text-xs text-indigo-500 font-bold" id="exam-countdown"></p>
+                <div class="hidden md:flex gap-3">
+                    <div class="glass px-4 py-2 rounded-xl border border-white/10 flex flex-col items-center min-w-[80px]">
+                        <span class="text-[10px] text-gray-400 uppercase">الي خلصتو</span>
+                        <span class="text-lg font-black text-green-400" x-text="totalDone"></span>
+                    </div>
+                    <div class="glass px-4 py-2 rounded-xl border border-white/10 flex flex-col items-center min-w-[80px]">
+                        <span class="text-[10px] text-gray-400 uppercase">المتبقي</span>
+                        <span class="text-lg font-black text-white" x-text="totalTasks - totalDone"></span>
+                    </div>
                 </div>
-                <div class="w-10 h-10 rounded-full bg-slate-200 border-2 border-white shadow-md overflow-hidden">
-                    <img src="https://ui-avatars.com/api/?name=Hero&background=4f46e5&color=fff" alt="User">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-gray-700 to-gray-800 border-2 border-gray-600 flex items-center justify-center shadow-xl">
+                    <i class="fas fa-user-astronaut text-xl text-gray-300"></i>
                 </div>
             </div>
         </header>
 
-        <div id="app-view" class="flex-1 overflow-y-auto p-6 md:p-10 space-y-8 scroll-smooth">
+        <div class="flex-1 overflow-y-auto p-4 md:p-8 pb-32 scroll-smooth" id="scrollArea">
+            
+            <div x-show="currentView === 'dashboard'" class="animate-slide-in space-y-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="md:col-span-2 glass rounded-[2.5rem] p-8 relative overflow-hidden group">
+                        <div class="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 opacity-0 group-hover:opacity-100 transition duration-1000"></div>
+                        <div class="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6">
+                            <div>
+                                <h2 class="text-3xl font-black text-white mb-2">أهلاً  ! 🚀</h2>
+                                <p class="text-gray-300 font-medium">لديك <span class="text-white font-bold text-xl border-b-2 border-accent px-1" x-text="todayTasks.length"></span> مهام في جدول اليوم.</p>
+                                <div class="mt-6 flex items-center gap-3">
+                                    <div class="w-full md:w-64 h-2.5 bg-gray-700/50 rounded-full overflow-hidden">
+                                        <div class="h-full bg-gradient-to-r from-green-400 to-emerald-500 shadow-[0_0_15px_#10b981]" :style="`width: ${dailyProgress}%`"></div>
+                                    </div>
+                                    <span class="text-green-400 font-bold font-mono" x-text="dailyProgress + '%'"></span>
+                                </div>
+                            </div>
+                            <div class="w-28 h-28 relative flex items-center justify-center">
+                                <svg class="w-full h-full -rotate-90">
+                                    <circle cx="56" cy="56" r="50" stroke="#1e293b" stroke-width="8" fill="transparent"/>
+                                    <circle cx="56" cy="56" r="50" stroke="#8b5cf6" stroke-width="8" fill="transparent" stroke-dasharray="314" :stroke-dashoffset="314 - (314 * dailyProgress / 100)" stroke-linecap="round" class="drop-shadow-[0_0_10px_#8b5cf6] transition-all duration-1000"/>
+                                </svg>
+                                <i class="fas fa-check absolute text-2xl text-white"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass rounded-[2.5rem] p-6 flex flex-col justify-between" :class="backlogCount > 0 ? 'border-red-500/50 bg-red-500/5' : 'border-green-500/50 bg-green-500/5'">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-bold uppercase tracking-wider text-gray-400">حالة النظام</span>
+                                <i class="fas fa-circle text-[10px] animate-pulse" :class="backlogCount > 0 ? 'text-red-500' : 'text-green-500'"></i>
+                            </div>
+                            <h3 class="text-2xl font-black text-white" x-text="backlogCount > 0 ? 'يوجد متراكمات' : 'الجدول مثالي'"></h3>
+                            <p class="text-sm text-gray-400 mt-1" x-text="backlogCount > 0 ? backlogCount + ' مهام فائتة' : 'لا يوجد مهام متأخرة'"></p>
+                        </div>
+                        <button x-show="backlogCount > 0" @click="currentView = 'backlog'" class="mt-4 w-full py-3 rounded-xl bg-red-500/20 text-red-400 font-bold hover:bg-red-500 hover:text-white transition border border-red-500/30">
+                            معالجة الآن &rarr;
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex items-center gap-3 mb-6 px-2">
+                        <div class="w-1 h-6 bg-accent rounded-full shadow-[0_0_10px_#06b6d4]"></div>
+                        <h3 class="text-xl font-bold text-white">مهام اليوم (${CONFIG.today})</h3>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <template x-for="task in todayTasks" :key="task.id">
+                            <div class="glass-card p-5 rounded-3xl relative group overflow-hidden">
+                                <div class="absolute top-0 right-0 w-1 h-full" :class="subjects[task.s].bg"></div>
+                                
+                                <div class="flex justify-between items-start relative z-10">
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider bg-white/5 px-2 py-0.5 rounded" x-text="subjects[task.s].n"></span>
+                                            <template x-if="task.type === 'exam'">
+                                                <span class="text-[9px] font-bold bg-red-500/20 text-red-400 px-2 py-0.5 rounded border border-red-500/20">🔥 امتحان</span>
+                                            </template>
+                                        </div>
+                                        <h4 class="text-lg font-bold text-white leading-snug group-hover:text-primary transition-colors" :class="{'line-through text-gray-500': task.done}" x-text="task.t"></h4>
+                                    </div>
+                                    <button @click="toggleTask(task.id)" class="w-10 h-10 rounded-xl flex items-center justify-center transition-all shadow-lg active:scale-90" :class="task.done ? 'bg-green-500 text-white' : 'bg-white/10 text-gray-400 hover:bg-white/20'">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                </div>
+                                
+                                <div class="absolute bottom-0 left-0 right-0 p-3 bg-black/40 backdrop-blur-md translate-y-full group-hover:translate-y-0 transition-transform flex justify-around border-t border-white/10">
+                                    <button @click="openModal(task)" class="text-xs font-bold text-blue-400 hover:text-white"><i class="fas fa-pen"></i> تعديل</button>
+                                    <button @click="deleteTask(task.id)" class="text-xs font-bold text-red-400 hover:text-white"><i class="fas fa-trash"></i> حذف</button>
+                                </div>
+                            </div>
+                        </template>
+                        <template x-if="todayTasks.length === 0">
+                            <div class="col-span-full py-12 text-center text-gray-500 font-bold bg-white/5 rounded-3xl border border-dashed border-white/10">
+                                <i class="fas fa-mug-hot text-4xl mb-3 block opacity-50"></i>
+                                جدول اليوم فارغ.. استمتع بوقتك!
+                            </div>
+                        </template>
+                    </div>
+                </div>
             </div>
+
+            <div x-show="currentView === 'schedule'" class="animate-slide-in space-y-6">
+                <div class="flex justify-center mb-6">
+                    <div class="glass p-1 rounded-2xl flex gap-1">
+                        <button @click="filterMode = 'day'" :class="filterMode === 'day' ? 'bg-primary text-white shadow-lg' : 'text-gray-400 hover:text-white'" class="px-5 py-2 rounded-xl text-xs font-bold transition-all">يومي</button>
+                        <button @click="filterMode = 'week'" :class="filterMode === 'week' ? 'bg-primary text-white shadow-lg' : 'text-gray-400 hover:text-white'" class="px-5 py-2 rounded-xl text-xs font-bold transition-all">أسبوعي</button>
+                        <button @click="filterMode = 'month'" :class="filterMode === 'month' ? 'bg-primary text-white shadow-lg' : 'text-gray-400 hover:text-white'" class="px-5 py-2 rounded-xl text-xs font-bold transition-all">شهري</button>
+                    </div>
+                </div>
+
+                <div class="max-w-5xl mx-auto space-y-4">
+                    <template x-for="(group, date) in filteredTasks" :key="date">
+                        <div class="glass rounded-3xl overflow-hidden border border-white/5 group hover:border-primary/30 transition-colors">
+                            <div class="bg-white/5 px-6 py-3 border-b border-white/5 flex justify-between items-center">
+                                <div class="flex items-center gap-3">
+                                    <span class="font-black text-white text-lg font-mono" x-text="date"></span>
+                                    <template x-if="date === '${CONFIG.today}'">
+                                        <span class="bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full">اليوم</span>
+                                    </template>
+                                </div>
+                                <span class="text-xs font-bold text-gray-400 bg-black/20 px-2 py-1 rounded" x-text="group.length + ' مهام'"></span>
+                            </div>
+                            <div class="divide-y divide-white/5">
+                                <template x-for="task in group" :key="task.id">
+                                    <div class="flex items-center justify-between p-4 hover:bg-white/5 transition-colors">
+                                        <div class="flex items-center gap-4">
+                                            <button @click="toggleTask(task.id)" class="w-5 h-5 rounded border border-gray-500 flex items-center justify-center transition-all" :class="task.done ? 'bg-green-500 border-green-500' : 'hover:border-white'">
+                                                <i x-show="task.done" class="fas fa-check text-xs text-white"></i>
+                                            </button>
+                                            <div>
+                                                <h4 class="font-bold text-sm text-gray-200" :class="{'line-through text-gray-600': task.done}" x-text="task.t"></h4>
+                                                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded mt-1 inline-block text-black" :class="subjects[task.s].bg.replace('bg-', 'bg-opacity-80 bg-')" x-text="subjects[task.s].n"></span>
+                                            </div>
+                                        </div>
+                                        <button @click="deleteTask(task.id)" class="text-gray-600 hover:text-red-500 transition"><i class="fas fa-trash"></i></button>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <div x-show="currentView === 'backlog'" class="animate-slide-in">
+                <template x-if="backlogCount > 0">
+                    <div class="max-w-5xl mx-auto space-y-10">
+                        <div class="glass p-8 rounded-[2.5rem] border border-red-500/30 bg-gradient-to-r from-red-900/20 to-transparent flex flex-col md:flex-row items-center justify-between gap-8 shadow-[0_0_40px_rgba(239,68,68,0.15)]">
+                            <div class="flex items-center gap-6">
+                                <div class="w-20 h-20 bg-red-500/10 rounded-2xl flex items-center justify-center text-4xl text-red-500 animate-pulse">
+                                    <i class="fas fa-radiation"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-3xl font-black text-white">تنبيه: <span x-text="backlogCount"></span> مهام متأخرة</h3>
+                                    <p class="text-red-300 font-medium mt-1">دع  النظام يوزعها لك على الأيام الفاضيه</p>
+                                </div>
+                            </div>
+                            <button @click="autoDistribute()" class="px-8 py-4 bg-red-600 hover:bg-red-700 text-white font-black rounded-xl shadow-lg hover:scale-105 transition-transform flex items-center gap-3">
+                                <i class="fas fa-microchip"></i> تشغيل المعالج الآلي
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <template x-for="task in backlogTasks" :key="task.id">
+                                <div class="glass-card p-5 rounded-2xl border-r-4 border-red-500 flex justify-between items-center group">
+                                    <div>
+                                        <span class="text-[10px] font-bold text-red-400 bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20">تاريخ: <span x-text="task.d"></span></span>
+                                        <h4 class="font-bold text-white text-lg mt-1" x-text="task.t"></h4>
+                                        <span class="text-xs text-gray-500 font-bold" x-text="subjects[task.s].n"></span>
+                                    </div>
+                                    <button @click="deleteTask(task.id)" class="w-10 h-10 rounded-full bg-white/5 hover:bg-red-500/20 hover:text-red-500 flex items-center justify-center transition opacity-0 group-hover:opacity-100">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+                
+                <template x-if="backlogCount === 0">
+                    <div class="h-[60vh] flex flex-col items-center justify-center text-center">
+                        <div class="w-40 h-40 bg-emerald-500/10 rounded-full flex items-center justify-center text-6xl text-emerald-500 mb-6 shadow-[0_0_50px_rgba(16,185,129,0.2)]">
+                            <i class="fas fa-check-double"></i>
+                        </div>
+                        <h2 class="text-4xl font-black text-white">الوضع مستقر!</h2>
+                        <p class="text-gray-400 text-lg mt-2">مفيش مهام متراكمة.</p>
+                    </div>
+                </template>
+            </div>
+
+            <div x-show="currentView === 'tree'" class="animate-slide-in pb-20">
+                <div class="flex justify-center gap-10 min-w-max px-8 pt-10">
+                    <template x-for="(key, index) in Object.keys(subjects)" :key="key">
+                        <div class="flex flex-col items-center relative">
+                            <div class="w-40 p-4 rounded-2xl text-center font-bold text-white shadow-xl mb-10 relative z-10 border border-white/10" :class="subjects[key].bg.replace('bg-', 'bg-opacity-90 bg-')">
+                                <span class="text-lg" x-text="subjects[key].n"></span>
+                                <span class="block text-xs opacity-80 font-mono mt-1" x-text="tasks.filter(t => t.s === key).length + ' Nodes'"></span>
+                            </div>
+                            
+                            <div class="absolute top-[50px] bottom-0 left-1/2 w-0.5 bg-gradient-to-b from-white/20 to-transparent -z-10"></div>
+
+                            <div class="flex flex-col gap-6 relative">
+                                <template x-for="task in tasks.filter(t => t.s === key).sort((a,b) => parseDate(a.d)-parseDate(b.d))" :key="task.id">
+                                    <div class="w-56 glass p-4 rounded-xl border border-white/5 hover:border-white/20 transition-all hover:scale-105 cursor-pointer relative group" @click="toggleTask(task.id)">
+                                        <div class="absolute top-1/2 right-full w-6 h-0.5 bg-white/20"></div>
+                                        <div class="absolute top-1/2 right-full translate-x-[-3px] -translate-y-1/2 w-2 h-2 rounded-full bg-white/40"></div>
+                                        
+                                        <div class="flex justify-between items-start">
+                                            <div>
+                                                <p class="text-[10px] font-mono text-accent mb-1" x-text="task.d"></p>
+                                                <p class="text-sm font-bold text-gray-200" :class="{'line-through text-gray-600': task.done}" x-text="task.t"></p>
+                                            </div>
+                                            <i x-show="task.done" class="fas fa-check text-green-500 text-xs"></i>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="md:hidden fixed bottom-6 left-4 right-4 h-20 glass rounded-[2.5rem] flex items-center justify-around px-2 z-40 border border-white/20 shadow-2xl backdrop-blur-xl">
+            <template x-for="item in navItems">
+                <button @click="currentView = item.id" :class="currentView === item.id ? 'text-primary' : 'text-gray-500'" class="p-3 relative transition-all">
+                    <i :class="item.icon" class="text-2xl"></i>
+                    <span x-show="item.id === 'backlog' && backlogCount > 0" class="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse"></span>
+                </button>
+            </template>
+            <button @click="openModal()" class="w-14 h-14 bg-white text-dark rounded-full flex items-center justify-center text-2xl -mt-10 border-4 border-dark shadow-xl hover:scale-110 transition">
+                <i class="fas fa-plus"></i>
+            </button>
+        </div>
 
     </main>
 
-    <div id="task-modal" class="fixed inset-0 z-[60] hidden">
-        <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" onclick="closeModal()"></div>
-        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white w-full max-w-md rounded-3xl p-8 shadow-2xl scale-100 transition-transform">
-            <h3 class="text-xl font-bold mb-6" id="modal-title">إضافة مهمة جديدة</h3>
-            <input type="hidden" id="task-id">
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-bold text-slate-500 mb-1">عنوان المهمة</label>
-                    <input type="text" id="input-title" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-bold">
-                </div>
+    <div x-show="modal.open" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md" x-transition.opacity>
+        <div class="bg-dark w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl border border-white/10 relative" @click.away="modal.open = false" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-90" x-transition:enter-end="opacity-100 scale-100">
+            <h3 class="text-2xl font-black text-white mb-6" x-text="modal.isEdit ? 'تعديل المهمة' : 'إضافة مهمة جديدة'"></h3>
+            
+            <div class="space-y-5">
+                <input type="text" x-model="modal.form.t" class="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 font-bold text-white outline-none focus:border-primary focus:ring-1 focus:ring-primary transition placeholder-gray-600" placeholder="عنوان المهمة">
                 <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-bold text-slate-500 mb-1">المادة</label>
-                        <select id="input-subject" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold">
-                            <option value="ar">لغة عربية</option>
-                            <option value="bio">أحياء/جيو</option>
-                            <option value="chem">كيمياء</option>
-                            <option value="phys">فيزياء</option>
-                            <option value="eng">إنجليزي</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-slate-500 mb-1">التاريخ</label>
-                        <input type="text" id="input-date" placeholder="1/25" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold">
-                    </div>
+                    <select x-model="modal.form.s" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-4 font-bold text-white outline-none">
+                        <option value="ar">عربي</option>
+                        <option value="bio">أحياء/جيو</option>
+                        <option value="chem">كيمياء</option>
+                        <option value="phys">فيزياء</option>
+                        <option value="eng">إنجليزي</option>
+                    </select>
+                    <input type="text" x-model="modal.form.d" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-4 font-bold text-white text-center outline-none" placeholder="1/20">
                 </div>
-                <button onclick="saveTaskFromModal()" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold hover:bg-indigo-700 transition">حفظ التغييرات</button>
+                <button @click="saveTask()" class="w-full bg-primary hover:bg-indigo-600 text-white py-4 rounded-2xl font-black shadow-lg hover:shadow-primary/40 transition-all text-lg mt-2">حفظ التغييرات</button>
             </div>
         </div>
     </div>
 
     <script>
-        // --- DATA & CONFIG ---
-        const TODAY = "1/17"; // التاريخ الحالي (محاكاة)
-        
-        // البيانات الأولية كما طلبتها
-        const initialDB = [
-             // العربي
-            { id: 1, s: 'ar', t: 'امتحان تقييمي', d: '1/16', done: false },
-            { id: 2, s: 'ar', t: 'المهمة الأولى', d: '1/17', done: false },
-            { id: 3, s: 'ar', t: 'تكملة المهمة الأولى', d: '1/18', done: false },
-            { id: 4, s: 'ar', t: 'المهمة الثانية', d: '1/19', done: false },
-            { id: 5, s: 'ar', t: 'تكملة المهمة الثانية', d: '1/20', done: false },
-            { id: 6, s: 'ar', t: 'المهمة الثالثة', d: '1/21', done: false },
-            { id: 7, s: 'ar', t: 'تكملة المهمة الثالثة', d: '1/22', done: false },
-            { id: 8, s: 'ar', t: 'المهمة الرابعة', d: '1/23', done: false },
-            { id: 9, s: 'ar', t: 'تكملة المهمة الرابعة', d: '1/24', done: false },
-            // الأحياء/جيو
-            { id: 10, s: 'bio', t: 'الدعامة والحركة (شرح+حل)', d: '1/17', done: false },
-            { id: 11, s: 'bio', t: 'الهرمونات (شرح+حل)', d: '1/19', done: false },
-            { id: 12, s: 'bio', t: 'الامتحان الشامل', d: '1/20', done: false, type: 'exam' },
-            { id: 13, s: 'bio', t: 'التكاثر ما قبل الإنسان', d: '1/21', done: false },
-            { id: 14, s: 'bio', t: 'التكاثر في الإنسان', d: '1/23', done: false },
-            { id: 15, s: 'bio', t: 'التراكيب الجيولوجية', d: '1/25', done: false },
-            { id: 16, s: 'bio', t: 'المعادن (شرح+حل)', d: '1/27', done: false },
-            { id: 17, s: 'bio', t: 'حل اختبارات شاملة', d: '1/29', done: false },
-            // كيمياء
-            { id: 18, s: 'chem', t: 'معسكر الكهربية', d: '1/19', done: false },
-            { id: 19, s: 'chem', t: 'اختبار باب 4', d: '1/20', done: false, type: 'exam' },
-            { id: 20, s: 'chem', t: 'معسكر الاتزان', d: '1/21', done: false },
-            { id: 21, s: 'chem', t: 'اختبار باب 3', d: '1/22', done: false, type: 'exam' },
-            { id: 22, s: 'chem', t: 'معسكر التحليل', d: '1/23', done: false },
-            { id: 23, s: 'chem', t: 'اختبار باب 2', d: '1/24', done: false, type: 'exam' },
-            { id: 24, s: 'chem', t: 'معسكر الانتقالية', d: '1/26', done: false },
-            { id: 25, s: 'chem', t: 'اختبار باب 1', d: '1/27', done: false, type: 'exam' },
-            { id: 26, s: 'chem', t: 'بداية عضوية', d: '1/31', done: false },
-            { id: 27, s: 'chem', t: 'شامل كيمياء', d: '2/5', done: false, type: 'exam' },
-            // فيزياء
-            { id: 28, s: 'phys', t: 'مراجعة 1 (افتكّر اللي فات)', d: '1/25', done: false },
-            { id: 29, s: 'phys', t: 'مراجعة 2 (مفاتيح وتريكات)', d: '1/28', done: false },
-            { id: 30, s: 'phys', t: 'مراجعة 3 (تربيطات)', d: '1/30', done: false },
-        ];
-        
-        // توليد الإنجليزي
-        for(let i=25; i<=31; i++) initialDB.push({ id: 100+i, s: 'eng', t: `مراجعة إنجليزي`, d: `1/${i}`, done: false });
-        for(let i=1; i<=11; i++) initialDB.push({ id: 200+i, s: 'eng', t: `مراجعة إنجليزي`, d: `2/${i}`, done: false });
-
-        // State
-        let tasks = JSON.parse(localStorage.getItem('proTasks')) || initialDB;
-        let currentView = 'dashboard';
-        let scheduleMode = 'week'; // 'month' or 'week'
-
-        // --- CORE FUNCTIONS ---
-        function save() {
-            localStorage.setItem('proTasks', JSON.stringify(tasks));
-            renderBadge();
-        }
-
-        function parseDate(dStr) {
-            const [m, d] = dStr.split('/').map(Number);
-            return new Date(2026, m-1, d);
-        }
-
-        // --- ROUTER & VIEWS ---
-        function router(view) {
-            currentView = view;
-            document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active', 'bg-indigo-50', 'text-indigo-600'));
-            document.getElementById(`nav-${view}`).classList.add('active', 'bg-indigo-50', 'text-indigo-600');
-            
-            const app = document.getElementById('app-view');
-            const title = document.getElementById('page-title');
-            
-            app.innerHTML = ''; // Clear
-            
-            if (view === 'dashboard') renderDashboard(app, title);
-            else if (view === 'schedule') renderSchedule(app, title);
-            else if (view === 'backlog') renderBacklog(app, title);
-            else if (view === 'analytics') renderAnalytics(app, title);
-        }
-
-        // 1. DASHBOARD VIEW
-        function renderDashboard(container, title) {
-            title.innerText = "لوحة التحكم اليومية";
-            const todayTasks = tasks.filter(t => t.d === TODAY);
-            const donePercent = Math.round((tasks.filter(t => t.done).length / tasks.length) * 100);
-
-            container.innerHTML = `
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="md:col-span-2 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-3xl p-8 text-white relative overflow-hidden shadow-xl">
-                        <div class="relative z-10">
-                            <h2 class="text-3xl font-bold mb-2">صباح الخير ! 🚀</h2>
-                            <p class="text-indigo-100 mb-6">لديك <span class="font-bold text-white text-xl border-b-2 border-yellow-400 mx-1">${todayTasks.length}</span> مهام اليوم. أنت أقوى مما تتخيل!</p>
-                            <div class="w-full bg-white/20 h-3 rounded-full overflow-hidden backdrop-blur-sm">
-                                <div class="bg-yellow-400 h-full transition-all duration-1000" style="width: ${donePercent}%"></div>
-                            </div>
-                            <p class="text-xs mt-2 font-bold opacity-80 text-left">${donePercent}% من المعسكر مكتمل</p>
-                        </div>
-                        <i class="fas fa-trophy absolute -bottom-6 -left-6 text-9xl text-white opacity-10 rotate-12"></i>
-                    </div>
-                    
-                    <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center">
-                        <div class="w-20 h-20 rounded-full border-4 border-indigo-100 flex items-center justify-center text-3xl font-bold text-indigo-600 mb-2">
-                           ${todayTasks.filter(t=>t.done).length}/${todayTasks.length}
-                        </div>
-                        <p class="text-slate-500 font-bold">إنجاز اليوم</p>
-                    </div>
-                </div>
-
-                <div>
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-xl font-bold text-slate-800">قائمة مهام اليوم (${TODAY})</h3>
-                        <button onclick="router('schedule')" class="text-sm text-indigo-600 font-bold hover:underline">عرض الجدول الكامل</button>
-                    </div>
-                    <div class="grid grid-cols-1 gap-4">
-                        ${todayTasks.length ? todayTasks.map(t => createCardHTML(t)).join('') : '<div class="p-8 text-center bg-white rounded-2xl border border-dashed border-slate-300 text-slate-400">لا توجد مهام اليوم، استمتع بالراحة! ☕</div>'}
-                    </div>
-                </div>
-            `;
-        }
-
-        // 2. SCHEDULE VIEW (Week/Month + PDF)
-        function renderSchedule(container, title) {
-            title.innerText = "الجدول الدراسي";
-            
-            // Filters & Controls
-            const controls = `
-                <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
-                    <div class="bg-white p-1 rounded-xl border border-slate-200 shadow-sm flex">
-                        <button onclick="setScheduleMode('week')" class="px-6 py-2 rounded-lg font-bold text-sm transition ${scheduleMode === 'week' ? 'bg-indigo-600 text-white shadow' : 'text-slate-500 hover:bg-slate-50'}">أسبوعي</button>
-                        <button onclick="setScheduleMode('month')" class="px-6 py-2 rounded-lg font-bold text-sm transition ${scheduleMode === 'month' ? 'bg-indigo-600 text-white shadow' : 'text-slate-500 hover:bg-slate-50'}">شهري</button>
-                    </div>
-                    <button onclick="downloadPDF()" class="bg-slate-800 text-white px-4 py-2 rounded-xl font-bold text-sm hover:bg-slate-700 flex items-center gap-2">
-                        <i class="fas fa-file-pdf"></i> تحميل PDF
-                    </button>
-                </div>
-            `;
-
-            let contentHTML = '';
-            
-            // Sorting Tasks Chronologically
-            const sortedTasks = [...tasks].sort((a,b) => parseDate(a.d) - parseDate(b.d));
-            const grouped = sortedTasks.reduce((acc, t) => { (acc[t.d] = acc[t.d] || []).push(t); return acc; }, {});
-
-            if(scheduleMode === 'month') {
-                contentHTML = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="schedule-content">`;
-                for(const [date, dayTasks] of Object.entries(grouped)) {
-                    contentHTML += `
-                        <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition break-inside-avoid">
-                            <div class="flex justify-between items-center mb-3 border-b border-slate-50 pb-2">
-                                <span class="font-bold text-indigo-700 bg-indigo-50 px-2 py-1 rounded text-sm">${date}</span>
-                                <span class="text-xs text-slate-400 font-bold">${dayTasks.length} مهام</span>
-                            </div>
-                            <div class="space-y-2">
-                                ${dayTasks.map(t => `
-                                    <div class="text-xs p-2 rounded-lg ${getSubjectStyle(t.s)} font-bold flex justify-between items-center group cursor-pointer" onclick="openModal(${t.id})">
-                                        <span class="${t.done ? 'line-through opacity-50' : ''} truncate">${t.t}</span>
-                                        ${t.type==='exam' ? '<i class="fas fa-exclamation-circle text-red-500"></i>' : ''}
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-                    `;
-                }
-                contentHTML += `</div>`;
-            } else {
-                // Weekly View (Just showing next 7 days from today for simplicity)
-                const todayTime = parseDate(TODAY).getTime();
-                const weekTasks = sortedTasks.filter(t => {
-                    const tTime = parseDate(t.d).getTime();
-                    return tTime >= todayTime && tTime <= todayTime + (7 * 86400000);
-                });
-                
-                // Group again for week
-                const weekGrouped = weekTasks.reduce((acc, t) => { (acc[t.d] = acc[t.d] || []).push(t); return acc; }, {});
-
-                contentHTML = `<div class="space-y-6" id="schedule-content">`;
-                for(const [date, dayTasks] of Object.entries(weekGrouped)) {
-                    contentHTML += `
-                        <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
-                            <h3 class="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2"><i class="fas fa-calendar-day text-indigo-500"></i> ${date}</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                ${dayTasks.map(t => createCardHTML(t)).join('')}
-                            </div>
-                        </div>
-                    `;
-                }
-                contentHTML += `</div>`;
-            }
-
-            container.innerHTML = controls + contentHTML;
-        }
-
-        // 3. BACKLOG VIEW
-        function renderBacklog(container, title) {
-            title.innerText = " المتراكم";
-            const todayTime = parseDate(TODAY).getTime();
-            const backlogTasks = tasks.filter(t => !t.done && parseDate(t.d).getTime() < todayTime);
-
-            container.innerHTML = `
-                <div class="bg-red-50 border border-red-100 rounded-3xl p-6 mb-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                    <div class="flex items-center gap-4">
-                        <div class="bg-white p-4 rounded-full text-red-500 shadow-sm"><i class="fas fa-fire-alt text-2xl"></i></div>
-                        <div>
-                            <h3 class="font-bold text-red-900 text-lg">الحق نفسك </h3>
-                            <p class="text-red-700 text-sm">لديك <span class="font-black text-xl">${backlogTasks.length}</span> مهام متأخرة. لا تؤجل مهمه النهارداه!</p>
-                        </div>
-                    </div>
-                    ${backlogTasks.length > 0 ? `
-                    <button onclick="smartDistribute()" class="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-red-200 transition flex items-center gap-2 transform hover:scale-105 active:scale-95">
-                        <i class="fas fa-magic"></i>  توزيع  تلقائي في اقرب وقت فيه مهام خفيفه
-                    </button>` : ''}
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    ${backlogTasks.length ? backlogTasks.map(t => createCardHTML(t, true)).join('') : 
-                    `<div class="col-span-full text-center py-12">
-                        <i class="fas fa-check-circle text-6xl text-green-200 mb-4 block"></i>
-                        <span class="text-slate-400 font-bold"> عاااااااش مفيش اي حاجه متراكمه .</span>
-                    </div>`}
-                </div>
-            `;
-        }
-
-        // 4. ANALYTICS VIEW
-        function renderAnalytics(container, title) {
-            title.innerText = "تحليل الأداء";
-            container.innerHTML = `
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 h-96 relative">
-                        <h4 class="font-bold text-slate-700 mb-4">نسبة الإنجاز الكلية</h4>
-                        <canvas id="chartPie"></canvas>
-                    </div>
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 h-96 relative">
-                        <h4 class="font-bold text-slate-700 mb-4">الإنجاز حسب المادة</h4>
-                        <canvas id="chartBar"></canvas>
-                    </div>
-                </div>
-            `;
-            setTimeout(initCharts, 100);
-        }
-
-        // --- HELPER HTML GENERATORS ---
-        function getSubjectStyle(code) {
-            const styles = {
-                ar: 'grad-ar', bio: 'grad-bio', chem: 'grad-chem', phys: 'grad-phys', eng: 'grad-eng'
-            };
-            return styles[code] || 'bg-slate-100 text-slate-600';
-        }
-        
-        function getSubjectName(code) {
-             const names = { ar: 'عربي', bio: 'أحياء', chem: 'كيمياء', phys: 'فيزياء', eng: 'إنجليزي' };
-             return names[code] || 'عام';
-        }
-
-        function createCardHTML(t, isBacklog = false) {
-            return `
-                <div class="task-card bg-white p-4 rounded-2xl border ${t.done ? 'border-green-200 opacity-70' : 'border-slate-100'} shadow-sm relative group overflow-hidden">
-                    <div class="flex justify-between items-start">
-                        <div class="flex items-start gap-4">
-                            <div class="w-12 h-12 rounded-xl flex items-center justify-center font-bold text-lg shadow-inner ${getSubjectStyle(t.s)}">
-                                ${getSubjectName(t.s)[0]}
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-slate-800 ${t.done ? 'line-through text-slate-400' : ''}">${t.t}</h4>
-                                <div class="flex gap-2 mt-1">
-                                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-100 px-2 py-0.5 rounded">${getSubjectName(t.s)}</span>
-                                    <span class="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded"><i class="fas fa-clock"></i> ${t.d}</span>
-                                    ${t.type === 'exam' ? '<span class="text-[10px] font-bold text-red-600 bg-red-100 px-2 py-0.5 rounded">امتحان</span>' : ''}
-                                </div>
-                            </div>
-                        </div>
-                        <input type="checkbox" onchange="toggleDone(${t.id})" ${t.done ? 'checked' : ''} class="w-6 h-6 accent-indigo-600 cursor-pointer rounded-lg">
-                    </div>
-                    
-                    <div class="absolute bottom-2 left-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onclick="openModal(${t.id})" class="text-xs bg-indigo-100 text-indigo-600 p-2 rounded-lg hover:bg-indigo-200"><i class="fas fa-pen"></i></button>
-                        <button onclick="deleteTask(${t.id})" class="text-xs bg-red-100 text-red-600 p-2 rounded-lg hover:bg-red-200"><i class="fas fa-trash"></i></button>
-                    </div>
-                </div>
-            `;
-        }
-
-        // --- ACTIONS ---
-        function setScheduleMode(mode) {
-            scheduleMode = mode;
-            router('schedule');
-        }
-
-        function toggleDone(id) {
-            const task = tasks.find(t => t.id === id);
-            task.done = !task.done;
-            save();
-            router(currentView); // Refresh
-            
-            if(task.done) {
-                const Toast = Swal.mixin({
-                    toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, timerProgressBar: true,
-                    didOpen: (toast) => { toast.addEventListener('mouseenter', Swal.stopTimer); toast.addEventListener('mouseleave', Swal.resumeTimer); }
-                });
-                Toast.fire({ icon: 'success', title: 'عاش يا بطل! استمر 💪' });
-            }
-        }
-
-        function deleteTask(id) {
-            Swal.fire({
-                title: 'هل أنت متأكد؟', text: "لن تتمكن من استعادة المهمة", icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#cbd5e1', confirmButtonText: 'نعم، احذفها', cancelButtonText: 'إلغاء'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    tasks = tasks.filter(t => t.id !== id);
-                    save();
-                    router(currentView);
-                    Swal.fire('تم الحذف!', 'تم حذف المهمة بنجاح.', 'success');
-                }
-            });
-        }
-
-        // --- MODAL LOGIC (ADD/EDIT) ---
-        function openModal(id = null) {
-            const modal = document.getElementById('task-modal');
-            modal.classList.remove('hidden');
-            
-            if(id) {
-                const task = tasks.find(t => t.id === id);
-                document.getElementById('modal-title').innerText = 'تعديل المهمة';
-                document.getElementById('task-id').value = task.id;
-                document.getElementById('input-title').value = task.t;
-                document.getElementById('input-subject').value = task.s;
-                document.getElementById('input-date').value = task.d;
-            } else {
-                document.getElementById('modal-title').innerText = 'إضافة مهمة جديدة';
-                document.getElementById('task-id').value = '';
-                document.getElementById('input-title').value = '';
-                document.getElementById('input-date').value = TODAY;
-            }
-        }
-
-        function closeModal() {
-            document.getElementById('task-modal').classList.add('hidden');
-        }
-
-        function saveTaskFromModal() {
-            const id = document.getElementById('task-id').value;
-            const title = document.getElementById('input-title').value;
-            const subj = document.getElementById('input-subject').value;
-            const date = document.getElementById('input-date').value;
-
-            if(!title || !date) return Swal.fire('تنبيه', 'يرجى ملء جميع البيانات', 'error');
-
-            if(id) {
-                // Edit
-                const task = tasks.find(t => t.id == id);
-                task.t = title; task.s = subj; task.d = date;
-            } else {
-                // Add
-                tasks.push({
-                    id: Date.now(),
-                    t: title, s: subj, d: date, done: false
-                });
-            }
-            save();
-            closeModal();
-            router(currentView);
-            Swal.fire('ممتاز', 'تم حفظ التغييرات بنجاح', 'success');
-        }
-
-        // --- SMART FEATURES ---
-        function smartDistribute() {
-            const todayTime = parseDate(TODAY).getTime();
-            const backlog = tasks.filter(t => !t.done && parseDate(t.d).getTime() < todayTime);
-            
-            // Find candidates (next 10 days)
-            const candidates = [];
-            for(let i=1; i<=10; i++) {
-                // Simple logic: Day number + i (needs better date handling for month rolling, simplified here)
-                const d = parseInt(TODAY.split('/')[1]); 
-                candidates.push(`1/${d+i}`);
-            }
-
-            backlog.forEach(t => {
-                // Find least busy day
-                let bestDay = candidates[0];
-                let min = 99;
-                candidates.forEach(day => {
-                    const count = tasks.filter(x => x.d === day).length;
-                    if(count < min) { min = count; bestDay = day; }
-                });
-                t.d = bestDay;
-            });
-            
-            save();
-            router('backlog');
-            Swal.fire('تم التوزيع!', 'المهمه المتراكمه اتوزعنت عندك في الجدول في اثرب يوم ففيه عدد مهام اقل', 'success');
-        }
-
-        function downloadPDF() {
-            const element = document.getElementById('schedule-content');
-            const opt = {
-                margin: 1,
-                filename: 'My_Study_Schedule.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2 },
-                jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' }
-            };
-            html2pdf().set(opt).from(element).save();
-        }
-
-        function initCharts() {
-            const done = tasks.filter(t => t.done).length;
-            const total = tasks.length;
-
-            new Chart(document.getElementById('chartPie'), {
-                type: 'doughnut',
-                data: {
-                    labels: ['منجز', 'متبقي'],
-                    datasets: [{ data: [done, total-done], backgroundColor: ['#4f46e5', '#e2e8f0'] }]
+        function app() {
+            return {
+                currentView: 'dashboard',
+                filterMode: 'week',
+                modal: { open: false, isEdit: false, form: { id: null, t: '', s: 'ar', d: '' } },
+                tasks: [],
+                navItems: [
+                    { id: 'dashboard', label: 'الرئيسية', icon: 'fas fa-rocket' },
+                    { id: 'schedule', label: 'الجدول', icon: 'fas fa-calendar-days' },
+                    { id: 'backlog', label: 'المتراكمات', icon: 'fas fa-layer-group' },
+                    { id: 'tree', label: 'الخريطة', icon: 'fas fa-network-wired' }
+                ],
+                subjects: {
+                    ar: { n: 'العربية', bg: 'bg-rose-500' },
+                    bio: { n: 'أحياء/جيو', bg: 'bg-emerald-500' },
+                    chem: { n: 'الكيمياء', bg: 'bg-cyan-500' },
+                    phys: { n: 'الفيزياء', bg: 'bg-amber-500' },
+                    eng: { n: 'إنجليزي', bg: 'bg-violet-500' }
                 },
-                options: { responsive: true, maintainAspectRatio: false }
-            });
 
-            const subKeys = ['ar', 'bio', 'chem', 'phys', 'eng'];
-            const subData = subKeys.map(k => tasks.filter(t => t.s === k && t.done).length);
-            
-            new Chart(document.getElementById('chartBar'), {
-                type: 'bar',
-                data: {
-                    labels: ['عربي', 'أحياء', 'كيمياء', 'فيزياء', 'إنجليزي'],
-                    datasets: [{ label: 'مهام منجزة', data: subData, backgroundColor: ['#fecaca', '#bbf7d0', '#bfdbfe', '#fde68a', '#e9d5ff'] }]
+                // Computed
+                get pageTitle() { const t = {dashboard:'لوحة القيادة', schedule:'الجدول الزمني', backlog:'غرفة العمليات', tree:'خريطة المنهج'}; return t[this.currentView]; },
+                get todayDateStr() { return new Date().toLocaleDateString('ar-EG', {weekday:'long', day:'numeric', month:'long'}); },
+                get todayTasks() { return this.tasks.filter(t => t.d === "1/17"); }, // Fixed date for demo
+                get totalTasks() { return this.tasks.length; },
+                get totalDone() { return this.tasks.filter(t => t.done).length; },
+                get dailyProgress() { if(this.todayTasks.length===0)return 0; return Math.round((this.todayTasks.filter(t=>t.done).length/this.todayTasks.length)*100); },
+                get backlogTasks() { 
+                    const todayTime = this.parseDate("1/17").getTime();
+                    return this.tasks.filter(t => !t.done && this.parseDate(t.d).getTime() < todayTime); 
                 },
-                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
-            });
-        }
+                get backlogCount() { return this.backlogTasks.length; },
+                get filteredTasks() {
+                    const sorted = [...this.tasks].sort((a,b)=>this.parseDate(a.d)-this.parseDate(b.d));
+                    const grouped = {};
+                    let result = sorted;
+                    const today = this.parseDate("1/17");
 
-        function renderBadge() {
-            const todayTime = parseDate(TODAY).getTime();
-            const count = tasks.filter(t => !t.done && parseDate(t.d).getTime() < todayTime).length;
-            const badge = document.getElementById('badge-backlog');
-            if(count > 0) {
-                badge.classList.remove('hidden');
-                badge.innerText = count;
-            } else {
-                badge.classList.add('hidden');
+                    if (this.filterMode === 'day') result = sorted.filter(t => t.d === "1/17");
+                    else if (this.filterMode === 'week') {
+                        const nextWeek = new Date(today); nextWeek.setDate(today.getDate() + 7);
+                        result = sorted.filter(t => { const d = this.parseDate(t.d); return d >= today && d <= nextWeek; });
+                    }
+                    // For month, we show all for simplicity in demo
+                    
+                    result.forEach(t => { if(!grouped[t.d]) grouped[t.d] = []; grouped[t.d].push(t); });
+                    return grouped;
+                },
+
+                // Init
+                initApp() {
+                    const saved = localStorage.getItem('future_os_db');
+                    if(saved) this.tasks = JSON.parse(saved);
+                    else this.seedData();
+                },
+
+                seedData() {
+                    const db = [
+                        // 1. العربي
+                        {id:101, s:'ar', t:'امتحان تقييمي', d:'1/16', done:false, type:'exam'},
+                        {id:102, s:'ar', t:'المهمة الأولى', d:'1/17', done:false},
+                        {id:103, s:'ar', t:'تكملة المهمة الأولى', d:'1/18', done:false},
+                        {id:104, s:'ar', t:'المهمة الثانية', d:'1/19', done:false},
+                        {id:105, s:'ar', t:'تكملة المهمة الثانية', d:'1/20', done:false},
+                        {id:106, s:'ar', t:'المهمة الثالثة', d:'1/21', done:false},
+                        {id:107, s:'ar', t:'تكملة المهمة الثالثة', d:'1/22', done:false},
+                        {id:108, s:'ar', t:'المهمة الرابعة', d:'1/23', done:false},
+                        {id:109, s:'ar', t:'تكملة المهمة الرابعة', d:'1/24', done:false},
+                        // 2. أحياء
+                        {id:201, s:'bio', t:'الدعامة والحركة (شرح+حل)', d:'1/17', done:false},
+                        {id:202, s:'bio', t:'الهرمونات (شرح+حل)', d:'1/19', done:false},
+                        {id:203, s:'bio', t:'الامتحان الشامل', d:'1/20', type:'exam', done:false},
+                        {id:204, s:'bio', t:'التكاثر ما قبل الإنسان', d:'1/21', done:false},
+                        {id:205, s:'bio', t:'التكاثر في الإنسان', d:'1/23', done:false},
+                        {id:206, s:'bio', t:'التراكيب الجيولوجية', d:'1/25', done:false},
+                        {id:207, s:'bio', t:'المعادن', d:'1/27', done:false},
+                        {id:208, s:'bio', t:'حل اختبارات شاملة', d:'1/29', done:false},
+                        // 3. كيمياء
+                        {id:301, s:'chem', t:'معسكر الكهربية', d:'1/19', done:false},
+                        {id:302, s:'chem', t:'اختبار باب 4', d:'1/20', type:'exam', done:false},
+                        {id:303, s:'chem', t:'معسكر الاتزان', d:'1/21', done:false},
+                        {id:304, s:'chem', t:'اختبار باب 3', d:'1/22', type:'exam', done:false},
+                        {id:305, s:'chem', t:'معسكر التحليل', d:'1/23', done:false},
+                        {id:306, s:'chem', t:'اختبار باب 2', d:'1/24', type:'exam', done:false},
+                        {id:307, s:'chem', t:'معسكر الانتقالية', d:'1/26', done:false},
+                        {id:308, s:'chem', t:'اختبار باب 1', d:'1/27', type:'exam', done:false},
+                        {id:309, s:'chem', t:'بداية عضوية', d:'1/31', done:false},
+                        {id:310, s:'chem', t:'الامتحان الشامل', d:'2/5', type:'exam', done:false},
+                        // 4. فيزياء
+                        {id:401, s:'phys', t:'مراجعة 1 (افتكّر اللي فات)', d:'1/25', done:false},
+                        {id:402, s:'phys', t:'مراجعة 2 (مفاتيح وتريكات)', d:'1/28', done:false},
+                        {id:403, s:'phys', t:'مراجعة 3 (تربيطات)', d:'1/30', done:false}
+                    ];
+                    // 5. إنجليزي
+                    for(let i=25; i<=31; i++) db.push({id:500+i, s:'eng', t:'مراجعة إنجليزي', d:`1/${i}`, done:false});
+                    for(let i=1; i<=11; i++) db.push({id:600+i, s:'eng', t:'مراجعة إنجليزي', d:`2/${i}`, done:false});
+                    
+                    this.tasks = db;
+                    this.save();
+                },
+
+                // Actions
+                toggleTask(id) {
+                    const t = this.tasks.find(x => x.id === id);
+                    t.done = !t.done;
+                    this.save();
+                    if(t.done) confetti({ particleCount: 60, spread: 70, origin: { y: 0.7 }, colors: ['#6366f1', '#06b6d4'] });
+                },
+                saveTask() {
+                    if(!this.modal.form.t) return;
+                    if(this.modal.isEdit) {
+                        const idx = this.tasks.findIndex(x => x.id === this.modal.form.id);
+                        this.tasks[idx] = { ...this.modal.form };
+                    } else {
+                        this.tasks.push({ id: Date.now(), t: this.modal.form.t, s: this.modal.form.s, d: this.modal.form.d, done: false });
+                    }
+                    this.save();
+                    this.modal.open = false;
+                    Swal.fire({toast:true, position:'top-end', icon:'success', title:'تم الحفظ', showConfirmButton:false, timer:1500});
+                },
+                deleteTask(id) {
+                    Swal.fire({title:'حذف المهمة؟', background:'#0f172a', color:'#fff', showCancelButton:true, confirmButtonText:'نعم'}).then(r=>{
+                        if(r.isConfirmed) { this.tasks = this.tasks.filter(t => t.id !== id); this.save(); }
+                    });
+                },
+                openModal(task = null) {
+                    this.modal.open = true;
+                    if(task) { this.modal.isEdit = true; this.modal.form = {...task}; }
+                    else { this.modal.isEdit = false; this.modal.form = {id:null, t:'', s:'ar', d:'1/17'}; }
+                },
+                autoDistribute() {
+                    Swal.fire({
+                        title: 'جاري التحليل...',
+                        html: 'يتم البحث عن الأيام الفارغة...',
+                        background: '#0f172a', color: '#fff',
+                        timer: 2000, didOpen:()=>Swal.showLoading()
+                    }).then(() => {
+                        const backlog = this.backlogTasks;
+                        let offset = 1;
+                        let count = 0;
+                        backlog.forEach(t => {
+                            let found = false;
+                            while(!found && offset < 30) {
+                                const target = this.getNextDate("1/17", offset);
+                                const load = this.tasks.filter(x => x.d === target).length;
+                                if(load < 3) { t.d = target; found = true; count++; }
+                                else { offset++; }
+                            }
+                        });
+                        this.save();
+                        Swal.fire({icon:'success', title:'تم!', text:`تمت جدولة ${count} مهمة بنجاح`, background:'#0f172a', color:'#fff'});
+                    });
+                },
+
+                // Utils
+                parseDate(s) { const [m,d] = s.split('/').map(Number); return new Date(2026, m-1, d); },
+                getNextDate(base, off) { const d = this.parseDate(base); d.setDate(d.getDate()+off); return `${d.getMonth()+1}/${d.getDate()}`; },
+                save() { localStorage.setItem('future_os_db', JSON.stringify(this.tasks)); }
             }
         }
-
-        // --- INIT ---
-       // 1. تحديث التاريخ الحالي تلقائياً
-const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-const today = new Date();
-const dateString = today.toLocaleDateString('ar-EG', options);
-document.getElementById('current-date-display').innerText = `اليوم: ${dateString}`;
-
-// 2. حساب العد التنازلي للامتحانات
-// بافتراض أن الامتحانات تبدأ يوم 13 يونيو 2026 (موعد تقديري)
-const examDate = new Date('June 13, 2026');
-const timeDiff = examDate - today;
-
-// تحويل الفرق من ملي ثانية إلى أيام
-const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-
-if (daysLeft > 0) {
-    document.getElementById('exam-countdown').innerText = `باقي ${daysLeft} يوم على الامتحانات`;
-} else if (daysLeft === 0) {
-    document.getElementById('exam-countdown').innerText = `تبدأ الامتحانات اليوم! بالتوفيق`;
-} else {
-    document.getElementById('exam-countdown').innerText = `انتهت الامتحانات أو بدأت بالفعل`;
-}
-        renderBadge();
-        router('dashboard');
-
     </script>
 </body>
 </html>
